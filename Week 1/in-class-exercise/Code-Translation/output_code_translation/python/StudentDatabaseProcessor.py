@@ -32,10 +32,10 @@ class StudentDatabaseProcessor:
         self.execute_query(insert_query, params)
 
     def search_student_by_name(self, name: str) -> List[Dict[str, str]]:
-        select_query = """
-            SELECT * FROM students WHERE name = ?
-        """
-        results = self.query_result(select_query, [name])
+        select_query = "SELECT * FROM students WHERE name = ?"
+        params = [name]
+        results = self.query_result(select_query, params)
+
         students: List[Dict[str, str]] = []
         for row in results:
             student = {
@@ -49,10 +49,9 @@ class StudentDatabaseProcessor:
         return students
 
     def delete_student_by_name(self, name: str) -> None:
-        delete_query = """
-            DELETE FROM students WHERE name = ?
-        """
-        self.execute_query(delete_query, [name])
+        delete_query = "DELETE FROM students WHERE name = ?"
+        params = [name]
+        self.execute_query(delete_query, params)
 
     def execute_query(self, query: str, params: List[str]) -> None:
         conn = sqlite3.connect(self.database_name)
@@ -69,7 +68,11 @@ class StudentDatabaseProcessor:
             cur = conn.cursor()
             cur.execute(query, params)
             rows = cur.fetchall()
-            # Convert each column value to string to match C++ behavior
-            return [[str(col) if col is not None else "" for col in row] for row in rows]
+            # Convert all column values to strings (matching C++ behavior)
+            results = [
+                ["" if value is None else str(value) for value in row]
+                for row in rows
+            ]
+            return results
         finally:
             conn.close()

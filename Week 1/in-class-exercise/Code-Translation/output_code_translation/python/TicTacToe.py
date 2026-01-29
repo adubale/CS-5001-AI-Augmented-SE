@@ -1,8 +1,10 @@
+from typing import List
+
 class TicTacToe:
     def __init__(self, N: int = 3):
-        # Initialize a 3xN board filled with spaces
-        self.board = [[' ' for _ in range(N)] for _ in range(3)]
-        self.current_player = 'X'
+        # board is a 3xN grid initialized with spaces
+        self.board: List[List[str]] = [[' ' for _ in range(N)] for _ in range(3)]
+        self.current_player: str = 'X'
 
     def make_move(self, row: int, col: int) -> bool:
         if self.board[row][col] == ' ':

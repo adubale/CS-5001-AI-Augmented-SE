@@ -16,9 +16,7 @@ class WeatherSystem:
         self.weather: str = ""
         self.weather_list: Dict[str, WeatherInfo] = {}
 
-    def query(self,
-              weather_list: Dict[str, WeatherInfo],
-              tmp_units: str = "celsius") -> Tuple[float, str]:
+    def query(self, weather_list: Dict[str, WeatherInfo], tmp_units: str = "celsius") -> Tuple[float, str]:
         self.weather_list = weather_list
         it = self.weather_list.get(self.city)
         if it is None:

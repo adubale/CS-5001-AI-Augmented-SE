@@ -4,21 +4,25 @@ from typing import List, Tuple
 
 
 class Snake:
-    def __init__(self, screenWidth: int, screenHeight: int, blockSize: int, foodPosition: Tuple[int, int]):
+    def __init__(self, screenWidth: int, screenHeight: int, blockSize: int,
+                 foodPosition: Tuple[int, int]):
         self.length: int = 1
         self.SCREEN_WIDTH: int = screenWidth
         self.SCREEN_HEIGHT: int = screenHeight
         self.BLOCK_SIZE: int = blockSize
         self.score: int = 0
         self.food_position: Tuple[int, int] = foodPosition
-        self.positions: List[Tuple[int, int]] = [(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2)]
+        self.positions: List[Tuple[int, int]] = [
+            (self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2)
+        ]
 
     def move(self, direction: Tuple[int, int]) -> None:
         cur = self.positions[0]
         x, y = direction
+
         newPos = (
             (cur[0] + x * self.BLOCK_SIZE) % self.SCREEN_WIDTH,
-            (cur[1] + y * self.BLOCK_SIZE) % self.SCREEN_HEIGHT
+            (cur[1] + y * self.BLOCK_SIZE) % self.SCREEN_HEIGHT,
         )
 
         if newPos == self.food_position:
@@ -35,8 +39,10 @@ class Snake:
         random.seed(int(time.time()))
         while True:
             self.food_position = (
-                (random.randrange(self.SCREEN_WIDTH // self.BLOCK_SIZE)) * self.BLOCK_SIZE,
-                (random.randrange(self.SCREEN_HEIGHT // self.BLOCK_SIZE)) * self.BLOCK_SIZE
+                (random.randint(0, (self.SCREEN_WIDTH // self.BLOCK_SIZE) - 1)
+                 * self.BLOCK_SIZE),
+                (random.randint(0, (self.SCREEN_HEIGHT // self.BLOCK_SIZE) - 1)
+                 * self.BLOCK_SIZE),
             )
             if self.food_position not in self.positions:
                 break
@@ -56,7 +62,7 @@ class Snake:
         return self.length
 
     def get_positions(self) -> List[Tuple[int, int]]:
-        return self.positions
+        return self.positions.copy()
 
     def get_score(self) -> int:
         return self.score

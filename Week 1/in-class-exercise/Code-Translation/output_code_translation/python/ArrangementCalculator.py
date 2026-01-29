@@ -1,5 +1,6 @@
 from typing import List
 
+
 class ArrangementCalculator:
     def __init__(self, datas: List[str]):
         self.datas = datas
@@ -15,7 +16,8 @@ class ArrangementCalculator:
     def count(n: int, m: int = -1) -> int:
         if m == -1 or n == m:
             return ArrangementCalculator.factorial(n)
-        return ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - m)
+        else:
+            return ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - m)
 
     @staticmethod
     def count_all(n: int) -> int:
@@ -30,7 +32,7 @@ class ArrangementCalculator:
                                 m: int,
                                 result: List[List[str]]) -> None:
         if len(current) == m:
-            result.append(current)
+            result.append(current[:])  # copy to avoid mutation
         else:
             for i in range(len(remaining)):
                 new_current = current + [remaining[i]]
@@ -43,7 +45,7 @@ class ArrangementCalculator:
 
         result: List[List[str]] = []
         current: List[str] = []
-        remaining = list(self.datas)
+        remaining: List[str] = self.datas[:]
 
         self._permutations_recursive(current, remaining, m, result)
         return result

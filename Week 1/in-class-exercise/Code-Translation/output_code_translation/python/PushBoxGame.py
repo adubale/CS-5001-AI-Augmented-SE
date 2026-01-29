@@ -3,7 +3,9 @@ from typing import List, Tuple
 
 class PushBoxGame:
     def __init__(self, map: List[str] = None):
-        self.map: List[str] = map if map is not None else []
+        if map is None:
+            map = []
+        self.map: List[str] = map
         self.player_row: int = 0
         self.player_col: int = 0
         self.targets: List[Tuple[int, int]] = []
@@ -13,7 +15,7 @@ class PushBoxGame:
         self.init_game()
 
     def gat_map(self) -> List[str]:
-        return self.map
+        return list(self.map)
 
     def is_game_over(self) -> bool:
         return self._is_game_over
@@ -25,10 +27,10 @@ class PushBoxGame:
         return self.player_row
 
     def get_targets(self) -> List[Tuple[int, int]]:
-        return self.targets
+        return list(self.targets)
 
     def get_boxes(self) -> List[Tuple[int, int]]:
-        return self.boxes
+        return list(self.boxes)
 
     def get_target_count(self) -> int:
         return self.target_count
@@ -46,8 +48,11 @@ class PushBoxGame:
                     self.boxes.append((row_idx, col_idx))
 
     def check_win(self) -> bool:
-        box_on_target = sum(1 for box in self.boxes if box in self.targets)
-        if box_on_target == self.target_count:
+        box_on_target_count = 0
+        for box in self.boxes:
+            if box in self.targets:
+                box_on_target_count += 1
+        if box_on_target_count == self.target_count:
             self._is_game_over = True
         return self._is_game_over
 
@@ -66,11 +71,13 @@ class PushBoxGame:
 
         if self.map[new_player_row][new_player_col] != '#':
             if (new_player_row, new_player_col) in self.boxes:
-                new_box_row = new_player_row + (new_player_row - self.player_row)
-                new_box_col = new_player_col + (new_player_col - self.player_col)
+                delta_row = new_player_row - self.player_row
+                delta_col = new_player_col - self.player_col
+                new_box_row = new_player_row + delta_row
+                new_box_col = new_player_col + delta_col
 
                 if self.map[new_box_row][new_box_col] != '#':
-                    # move the box
+                    # move box
                     self.boxes.remove((new_player_row, new_player_col))
                     self.boxes.append((new_box_row, new_box_col))
                     self.player_row = new_player_row

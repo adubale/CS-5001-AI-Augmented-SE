@@ -1,19 +1,20 @@
-import sys
+from typing import Tuple, Set, Dict, Callable
+
 
 class ArgumentParser:
     def __init__(self):
-        self.arguments = {}
-        self.required = set()
-        self.types = {}
-        self.type_converters = {}
+        self.arguments: Dict[str, str] = {}
+        self.required: Set[str] = set()
+        self.types: Dict[str, str] = {}
+        self.type_converters: Dict[str, Callable[[str], str]] = {}
         self.initialize_converters()
 
-    def parse_arguments(self, command_string):
+    def parse_arguments(self, command_string: str) -> Tuple[bool, Set[str]]:
         tokens = command_string.split()
-        # skip the command name
-        idx = 1
-        while idx < len(tokens):
-            word = tokens[idx]
+        # discard the first token (command name)
+        i = 1
+        while i < len(tokens):
+            word = tokens[i]
             if word.startswith("--"):
                 key_value = word[2:]
                 if "=" in key_value:
@@ -21,34 +22,34 @@ class ArgumentParser:
                 else:
                     key, value = key_value, ""
                 self.arguments[key] = self.convert_type(
-                    key, value if value else "1"
+                    key, value if value != "" else "1"
                 )
-                idx += 1
-            elif word.startswith("-") and not word.startswith("--"):
+                i += 1
+            elif word.startswith("-"):
                 key = word[1:]
                 # look ahead to see if next token is a value
-                if idx + 1 < len(tokens) and not tokens[idx + 1].startswith("-"):
-                    value = tokens[idx + 1]
-                    idx += 2
+                if i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
+                    value = tokens[i + 1]
+                    self.arguments[key] = self.convert_type(key, value)
+                    i += 2
                 else:
-                    value = "1"
-                    idx += 1
-                self.arguments[key] = self.convert_type(key, value)
+                    self.arguments[key] = self.convert_type(key, "1")
+                    i += 1
             else:
-                idx += 1  # ignore unrecognized tokens
+                i += 1
 
         missing_args = {req for req in self.required if req not in self.arguments}
         return (len(missing_args) == 0, missing_args)
 
-    def get_argument(self, key):
+    def get_argument(self, key: str) -> str:
         return self.arguments.get(key, "")
 
-    def add_argument(self, arg, required=False, type="string"):
+    def add_argument(self, arg: str, required: bool = False, type: str = "string"):
         if required:
             self.required.add(arg)
         self.types[arg] = type
 
-    def convert_type(self, arg, value):
+    def convert_type(self, arg: str, value: str) -> str:
         if arg not in self.types:
             return value
         converter = self.type_converters.get(self.types[arg])
@@ -57,18 +58,9 @@ class ArgumentParser:
         return value
 
     def initialize_converters(self):
-        def int_converter(value):
-            try:
-                return str(int(value))
-            except Exception:
-                return value
-
-        def bool_converter(value):
-            if value == "True":
-                return "1"
-            if value == "False":
-                return "0"
-            return value
-
-        self.type_converters["int"] = int_converter
-        self.type_converters["bool"] = bool_converter
+        self.type_converters["int"] = lambda value: (
+            str(int(value)) if value.lstrip("-").isdigit() else value
+        )
+        self.type_converters["bool"] = lambda value: (
+            "1" if value == "True" else ("0" if value == "False" else value)
+        )

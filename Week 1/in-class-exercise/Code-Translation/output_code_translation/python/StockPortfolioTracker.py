@@ -37,11 +37,11 @@ class StockPortfolioTracker:
         return False
 
     def buy_stock(self, stock: Stock) -> bool:
-        total_price = stock.price * stock.quantity
-        if total_price > self.cash_balance:
+        total_cost = stock.price * stock.quantity
+        if total_cost > self.cash_balance:
             return False
         self.add_stock(stock)
-        self.cash_balance -= total_price
+        self.cash_balance -= total_cost
         return True
 
     def sell_stock(self, stock: Stock) -> bool:
@@ -57,9 +57,10 @@ class StockPortfolioTracker:
         return total_value
 
     def get_portfolio_summary(self) -> Tuple[float, List[StockSummary]]:
-        summary: List[StockSummary] = []
-        for stock in self.portfolio:
-            summary.append(StockSummary(stock.name, self.get_stock_value(stock)))
+        summary: List[StockSummary] = [
+            StockSummary(stock.name, self.get_stock_value(stock))
+            for stock in self.portfolio
+        ]
         return self.calculate_portfolio_value(), summary
 
     def get_stock_value(self, stock: Stock) -> float:
@@ -72,4 +73,4 @@ class StockPortfolioTracker:
         return self.cash_balance
 
     def set_portfolio(self, p: List[Stock]) -> None:
-        self.portfolio = list(p)
+        self.portfolio = p

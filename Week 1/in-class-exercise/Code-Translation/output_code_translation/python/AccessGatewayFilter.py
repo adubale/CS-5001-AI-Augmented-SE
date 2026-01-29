@@ -1,25 +1,26 @@
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
 class User:
-    name: str = ""
+    name: str = ''
     level: int = 0
-    address: str = ""
+    address: str = ''
 
 
 @dataclass
 class Authorization:
-    user: User = User()
-    jwt: str = ""
+    user: User = field(default_factory=User)
+    jwt: str = ''
 
 
 @dataclass
 class Request:
-    path: str = ""
-    method: str = ""
-    auth: Authorization = Authorization()
+    path: str
+    method: str
+    auth: Authorization
 
 
 class AccessGatewayFilter:
@@ -28,7 +29,7 @@ class AccessGatewayFilter:
 
     def filter(self, request: Request) -> bool:
         request_uri = request.path
-        method = request.method  # unused, kept for parity
+        method = request.method
 
         if self.is_start_with(request_uri):
             return True
@@ -44,7 +45,7 @@ class AccessGatewayFilter:
         return False
 
     def is_start_with(self, request_uri: str) -> bool:
-        start_with = ["/api", "/login"]
+        start_with: List[str] = ["/api", "/login"]
         for s in start_with:
             if request_uri.startswith(s):
                 return True

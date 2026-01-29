@@ -5,8 +5,8 @@ class ShoppingCart:
         self.items: Dict[str, Tuple[float, int]] = {}
 
     def add_item(self, item: str, price: float, quantity: int = 1) -> None:
-        # In the original C++ both branches assign the same value,
-        # so we simply set/overwrite the entry.
+        # In the original C++ both branches performed the same assignment,
+        # so we directly set (price, quantity) for the item.
         self.items[item] = (price, quantity)
 
     def remove_item(self, item: str, quantity: int = 1) -> None:
@@ -19,7 +19,7 @@ class ShoppingCart:
                 self.items[item] = (price, new_qty)
 
     def view_items(self) -> Dict[str, Tuple[float, int]]:
-        # Return a shallow copy to mirror C++ returning a copy of the map
+        # Return a shallow copy to mimic returning by value in C++
         return self.items.copy()
 
     def total_price(self) -> float:
