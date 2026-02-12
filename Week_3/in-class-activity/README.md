@@ -36,6 +36,7 @@ pip install -e .
 ````
 
 _Reinstall after any local code modification._
+
 ---
 
 ## Environment Configuration
