@@ -35,8 +35,7 @@ Install in editable mode:
 pip install -e .
 ````
 
-Reinstall after any local code modification.
-
+_Reinstall after any local code modification._
 ---
 
 ## Environment Configuration
